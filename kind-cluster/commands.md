@@ -10,17 +10,8 @@
 
 - Create a 3-node Kubernetes cluster using Kind:
   ```bash
-  kind create cluster --config=config.yml
+  kind create cluster --config=cluster-config.yml
   ```
-
-- Check cluster information:
-  ```bash
-  kubectl cluster-info --context kind-kind
-  kubectl get nodes
-  kind get clusters
-  ```
-
----
 
 ## 2. Installing kubectl
 
@@ -48,16 +39,17 @@
 
 ---
 
-## 4. Cloning and Running the Example Voting App
+## 4. Cloning and Running the  Voting App
 
 - Clone the voting app repository:
   ```bash
-  git clone https://github.com/dockersamples/example-voting-app.git
-  cd example-voting-app/
+  git https://github.com/Hritik1706/kind-vote-app.git
+  cd kind-voting-app/
   ```
 
 - Apply Kubernetes YAML specifications for the voting app:
   ```bash
+  kubectl create ns kind-app
   kubectl apply -f k8s-specifications/
   ```
 
@@ -68,26 +60,11 @@
 
 - Forward local ports for accessing the voting and result apps:
   ```bash
-  kubectl port-forward service/vote 5000:5000 --address=0.0.0.0 &
-  kubectl port-forward service/result 5001:5001 --address=0.0.0.0 &
+  kubectl port-forward service/vote - n kind-app 5000:5000 --address=0.0.0.0 &
+  kubectl port-forward service/result -n kind-app 5001:5001 --address=0.0.0.0 &
   ```
 
----
-
-## 5. Managing Files in Example Voting App
-
-- Navigate and view files:
-  ```bash
-  cd ..
-  cd seed-data/
-  ls
-  cat Dockerfile
-  cat generate-votes.sh
-  ```
-
----
-
-## 6. Installing Argo CD
+## 5. Installing Argo CD
 
 - Create a namespace for Argo CD:
   ```bash
@@ -114,18 +91,7 @@
   kubectl port-forward -n argocd service/argocd-server 8443:443 &
   ```
 
----
-
-## 7. Deleting Kubernetes Cluster
-
-- Delete the Kind cluster:
-  ```bash
-  kind delete cluster --name=kind
-  ```
-
----
-
-## 8. Installing Kubernetes Dashboard
+## 6. Installing Kubernetes Dashboard
 
 - Deploy Kubernetes dashboard:
   ```bash
@@ -139,7 +105,7 @@
 
 ---
 
-## 9. Argo CD Initial Admin Password
+## 7. Argo CD Initial Admin Password
 
 - Retrieve Argo CD admin password:
   ```bash
@@ -149,7 +115,7 @@
 
 ---
 
-## 10. Install HELM
+## 8. Install HELM
 
 ```bash
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
@@ -159,7 +125,7 @@ chmod 700 get_helm.sh
 
 ---
 
-## 11. Install Kube Prometheus Stack
+## 9. Install Kube Prometheus Stack
 
 ```bash
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
@@ -181,7 +147,7 @@ kubectl port-forward svc/kind-prometheus-grafana -n monitoring 31000:80 --addres
 
 ---
 
-## 12. Prometheus Queries
+## 10. Prometheus Queries
 
 ```bash
 sum (rate (container_cpu_usage_seconds_total{namespace="default"}[1m])) / sum (machine_cpu_cores) * 100
